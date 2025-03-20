@@ -8,6 +8,8 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -32,7 +34,7 @@ export class InfrastructureStack extends cdk.Stack {
     // Cognito User Pool for Admins
     const userPool = new cognito.UserPool(this, 'BookCrawlAdminPool', {
       userPoolName: 'book-crawl-admin-pool',
-      selfSignUpEnabled: false, // Only admins can create users
+      selfSignUpEnabled: false,
       signInAliases: {
         email: true,
       },
@@ -49,10 +51,9 @@ export class InfrastructureStack extends cdk.Stack {
         requireDigits: true,
         requireSymbols: true,
       },
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // For development - change for production
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    // Add app client
     const userPoolClient = new cognito.UserPoolClient(this, 'BookCrawlAdminPoolClient', {
       userPool,
       authFlows: {
@@ -68,8 +69,8 @@ export class InfrastructureStack extends cdk.Stack {
       websiteErrorDocument: 'index.html',
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // For development - change for production
-      autoDeleteObjects: true, // For development - change for production
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     // CloudFront distribution
@@ -88,6 +89,38 @@ export class InfrastructureStack extends cdk.Stack {
       ],
     });
 
+    // Lambda Layer for shared code
+    const lambdaLayer = new lambda.LayerVersion(this, 'SharedLayer', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas')),
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
+      description: 'Shared dependencies and types',
+    });
+
+    // Lambda functions
+    const bookstoresFunction = new lambda.Function(this, 'BookstoresFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'bookstores.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas')),
+      environment: {
+        TABLE_NAME: table.tableName,
+      },
+      layers: [lambdaLayer],
+    });
+
+    const eventsFunction = new lambda.Function(this, 'EventsFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'events.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas')),
+      environment: {
+        TABLE_NAME: table.tableName,
+      },
+      layers: [lambdaLayer],
+    });
+
+    // Grant DynamoDB permissions to Lambda functions
+    table.grantReadWriteData(bookstoresFunction);
+    table.grantReadWriteData(eventsFunction);
+
     // API Gateway
     const api = new apigateway.RestApi(this, 'BookCrawlApi', {
       restApiName: 'Book Crawl API',
@@ -97,6 +130,36 @@ export class InfrastructureStack extends cdk.Stack {
         allowMethods: apigateway.Cors.ALL_METHODS,
       },
     });
+
+    // Cognito Authorizer
+    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'BookCrawlAuthorizer', {
+      cognitoUserPools: [userPool],
+    });
+
+    // API Resources and Methods
+    const bookstores = api.root.addResource('bookstores');
+    const bookstore = bookstores.addResource('{id}');
+    const events = api.root.addResource('events');
+    const event = events.addResource('{id}');
+
+    // Public endpoints
+    bookstores.addMethod('GET', new apigateway.LambdaIntegration(bookstoresFunction));
+    bookstore.addMethod('GET', new apigateway.LambdaIntegration(bookstoresFunction));
+    events.addMethod('GET', new apigateway.LambdaIntegration(eventsFunction));
+    event.addMethod('GET', new apigateway.LambdaIntegration(eventsFunction));
+
+    // Protected endpoints (require Cognito authentication)
+    const protected_options = {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    };
+
+    bookstores.addMethod('POST', new apigateway.LambdaIntegration(bookstoresFunction), protected_options);
+    bookstore.addMethod('PUT', new apigateway.LambdaIntegration(bookstoresFunction), protected_options);
+    bookstore.addMethod('DELETE', new apigateway.LambdaIntegration(bookstoresFunction), protected_options);
+    events.addMethod('POST', new apigateway.LambdaIntegration(eventsFunction), protected_options);
+    event.addMethod('PUT', new apigateway.LambdaIntegration(eventsFunction), protected_options);
+    event.addMethod('DELETE', new apigateway.LambdaIntegration(eventsFunction), protected_options);
 
     // Output values
     new cdk.CfnOutput(this, 'TableName', {

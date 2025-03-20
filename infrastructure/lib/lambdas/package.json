@@ -1,0 +1,11 @@
+{
+    "name": "indy-book-crawl-lambdas",
+    "version": "1.0.0",
+    "description": "Lambda functions for Indy Book Crawl",
+    "dependencies": {
+        "aws-sdk": "^2.1550.0",
+        "@types/aws-lambda": "^8.10.133",
+        "@types/uuid": "^9.0.8",
+        "uuid": "^9.0.1"
+    }
+}

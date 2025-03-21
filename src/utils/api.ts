@@ -7,7 +7,8 @@ interface ApiResponse<T> {
 
 export async function getBookstores(category?: string): Promise<ApiResponse<Bookstore[]>> {
     try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/bookstores${category ? `?category=${category}` : ''}`;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, ''); // Remove trailing slashes
+        const apiUrl = `${baseUrl}/bookstores${category ? `?category=${category}` : ''}`;
         const response = await fetch(apiUrl);
 
         if (!response.ok) {

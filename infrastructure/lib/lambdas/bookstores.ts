@@ -1,12 +1,39 @@
+/// <reference types="node" />
 import { DynamoDB } from 'aws-sdk';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Bookstore, BookstoreItem } from './types';
+import { Bookstore } from '../../../src/shared/types';
 import { v4 as uuidv4 } from 'uuid';
+
+// DynamoDB item type
+interface BookstoreItem extends Omit<Bookstore, 'id'> {
+    PK: string;  // BOOKSTORE#<id>
+    SK: string;  // METADATA#<id>
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
 const dynamodb = new DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME!;
 
+// CORS headers for all responses
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*', // For production, replace with your specific domain
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Access-Control-Allow-Credentials': 'true'
+};
+
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    // Handle CORS preflight requests
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: corsHeaders,
+            body: ''
+        };
+    }
+
     try {
         switch (event.httpMethod) {
             case 'GET':
@@ -29,6 +56,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
             default:
                 return {
                     statusCode: 405,
+                    headers: corsHeaders,
                     body: JSON.stringify({ message: 'Method not allowed' })
                 };
         }
@@ -36,7 +64,53 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         console.error(error);
         return {
             statusCode: 500,
+            headers: corsHeaders,
             body: JSON.stringify({ message: 'Internal server error' })
+        };
+    }
+}
+
+async function listBookstores(queryParams: { [key: string]: string | undefined }): Promise<APIGatewayProxyResult> {
+    try {
+        let result;
+
+        // If category is provided, query the GSI
+        if (queryParams?.category) {
+            const params: DynamoDB.DocumentClient.QueryInput = {
+                TableName: TABLE_NAME,
+                IndexName: 'GSI1',
+                KeyConditionExpression: 'GSI1PK = :category',
+                ExpressionAttributeValues: {
+                    ':category': `CATEGORY#${queryParams.category}`
+                }
+            };
+            result = await dynamodb.query(params).promise();
+        } else {
+            // Use scan for listing all bookstores
+            const params: DynamoDB.DocumentClient.ScanInput = {
+                TableName: TABLE_NAME,
+                FilterExpression: 'begins_with(PK, :pk)',
+                ExpressionAttributeValues: {
+                    ':pk': 'BOOKSTORE#'
+                }
+            };
+            result = await dynamodb.scan(params).promise();
+        }
+
+        return {
+            statusCode: 200,
+            headers: corsHeaders,
+            body: JSON.stringify(result.Items || [])
+        };
+    } catch (error) {
+        console.error('Error in listBookstores:', error);
+        return {
+            statusCode: 500,
+            headers: corsHeaders,
+            body: JSON.stringify({
+                message: 'Failed to list bookstores',
+                details: error instanceof Error ? error.message : String(error)
+            })
         };
     }
 }
@@ -53,73 +127,44 @@ async function getBookstore(id: string): Promise<APIGatewayProxyResult> {
     if (!result.Item) {
         return {
             statusCode: 404,
+            headers: corsHeaders,
             body: JSON.stringify({ message: 'Bookstore not found' })
         };
     }
 
     return {
         statusCode: 200,
-        body: JSON.stringify((result.Item as BookstoreItem).data)
+        headers: corsHeaders,
+        body: JSON.stringify(result.Item)
     };
 }
 
-async function listBookstores(queryParams?: { [key: string]: string | undefined }): Promise<APIGatewayProxyResult> {
-    let params: DynamoDB.DocumentClient.QueryInput = {
-        TableName: TABLE_NAME,
-        KeyConditionExpression: 'begins_with(PK, :pk)',
-        ExpressionAttributeValues: {
-            ':pk': 'BOOKSTORE#'
-        }
-    };
-
-    // If category is provided, query the GSI
-    if (queryParams?.category) {
-        params = {
-            TableName: TABLE_NAME,
-            IndexName: 'GSI1',
-            KeyConditionExpression: 'GSI1PK = :category',
-            ExpressionAttributeValues: {
-                ':category': `CATEGORY#${queryParams.category}`
-            }
-        };
-    }
-
-    const result = await dynamodb.query(params).promise();
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify(result.Items?.map(item => (item as BookstoreItem).data) || [])
-    };
-}
-
-async function createBookstore(bookstore: Bookstore): Promise<APIGatewayProxyResult> {
+async function createBookstore(bookstore: Omit<Bookstore, 'id'>): Promise<APIGatewayProxyResult> {
     const id = uuidv4();
-    const now = new Date().toISOString();
+    const timestamp = new Date().toISOString();
 
-    const bookstoreItem: BookstoreItem = {
+    const item: BookstoreItem = {
         PK: `BOOKSTORE#${id}`,
         SK: `METADATA#${id}`,
-        GSI1PK: `CATEGORY#${bookstore.categories[0]}`,
-        GSI1SK: `BOOKSTORE#${bookstore.name}`,
-        type: 'bookstore',
-        data: {
-            ...bookstore,
-            id
-        }
+        id,
+        ...bookstore,
+        createdAt: timestamp,
+        updatedAt: timestamp
     };
 
     await dynamodb.put({
         TableName: TABLE_NAME,
-        Item: bookstoreItem
+        Item: item
     }).promise();
 
     return {
         statusCode: 201,
-        body: JSON.stringify(bookstoreItem.data)
+        headers: corsHeaders,
+        body: JSON.stringify(item)
     };
 }
 
-async function updateBookstore(id: string, bookstore: Partial<Bookstore>): Promise<APIGatewayProxyResult> {
+async function updateBookstore(id: string, updates: Partial<Omit<Bookstore, 'id'>>): Promise<APIGatewayProxyResult> {
     const existing = await dynamodb.get({
         TableName: TABLE_NAME,
         Key: {
@@ -131,26 +176,27 @@ async function updateBookstore(id: string, bookstore: Partial<Bookstore>): Promi
     if (!existing.Item) {
         return {
             statusCode: 404,
+            headers: corsHeaders,
             body: JSON.stringify({ message: 'Bookstore not found' })
         };
     }
 
-    const updatedBookstore: BookstoreItem = {
-        ...existing.Item as BookstoreItem,
-        data: {
-            ...(existing.Item as BookstoreItem).data,
-            ...bookstore
-        }
+    const timestamp = new Date().toISOString();
+    const updatedItem: BookstoreItem = {
+        ...(existing.Item as BookstoreItem),
+        ...updates,
+        updatedAt: timestamp
     };
 
     await dynamodb.put({
         TableName: TABLE_NAME,
-        Item: updatedBookstore
+        Item: updatedItem
     }).promise();
 
     return {
         statusCode: 200,
-        body: JSON.stringify(updatedBookstore.data)
+        headers: corsHeaders,
+        body: JSON.stringify(updatedItem)
     };
 }
 
@@ -165,6 +211,7 @@ async function deleteBookstore(id: string): Promise<APIGatewayProxyResult> {
 
     return {
         statusCode: 204,
+        headers: corsHeaders,
         body: ''
     };
 } 

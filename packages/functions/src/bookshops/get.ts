@@ -12,14 +12,16 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ error: "Missing car show ID" }),
+                body: JSON.stringify({ error: "Missing bookshop ID" }),
             };
         }
 
         const result = await dynamodb.send(
             new GetCommand({
                 TableName,
-                Key: { id },
+                Key: {
+                    PK: `BOOKSHOP#${id}`
+                },
             })
         );
 
@@ -29,7 +31,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ error: "Car show not found" }),
+                body: JSON.stringify({ error: "Bookshop not found" }),
             };
         }
 
@@ -41,7 +43,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             body: JSON.stringify(result.Item),
         };
     } catch (error) {
-        console.error("Error fetching car show:", error);
+        console.error("Error fetching bookshop:", error);
         return {
             statusCode: 500,
             headers: {

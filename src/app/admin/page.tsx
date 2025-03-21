@@ -179,7 +179,7 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="address" className="block text-lg font-medium text-gray-200">
+                        <label htmlFor="address" className="block text-lg font-medium">
                             Street Address *
                         </label>
                         <input
@@ -189,13 +189,13 @@ export default function AdminPage() {
                             required
                             value={addressData.address}
                             onChange={(e) => setAddressData(prev => ({ ...prev, address: e.target.value }))}
-                            className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div className="col-span-2">
-                            <label htmlFor="city" className="block text-lg font-medium text-gray-200">
+                            <label htmlFor="city" className="block text-lg font-medium">
                                 City *
                             </label>
                             <input
@@ -205,12 +205,12 @@ export default function AdminPage() {
                                 required
                                 value={addressData.city}
                                 onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
-                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="state" className="block text-lg font-medium text-gray-200">
+                            <label htmlFor="state" className="block text-lg font-medium">
                                 State
                             </label>
                             <input
@@ -219,12 +219,12 @@ export default function AdminPage() {
                                 id="state"
                                 value={addressData.state}
                                 onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
-                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="zipCode" className="block text-lg font-medium text-gray-200">
+                            <label htmlFor="zipCode" className="block text-lg font-medium">
                                 ZIP Code *
                             </label>
                             <input
@@ -235,7 +235,7 @@ export default function AdminPage() {
                                 pattern="[0-9]{5}"
                                 value={addressData.zipCode}
                                 onChange={(e) => setAddressData(prev => ({ ...prev, zipCode: e.target.value }))}
-                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                     </div>

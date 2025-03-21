@@ -1,6 +1,5 @@
-import { patch } from "aws-amplify/api";
-
 export const getApiUrl = () => {
+    console.log(process.env.NEXT_PUBLIC_API_URL);
     return process.env.NEXT_PUBLIC_API_URL || '';
 };
 

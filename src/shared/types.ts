@@ -1,4 +1,4 @@
-export interface Bookstore {
+export interface Bookshop {
     id: string;
     name: string;
     address: {
@@ -18,7 +18,7 @@ export interface Bookstore {
     };
 }
 
-export interface BookstoreFilters {
+export interface BookshopFilters {
     category?: string;
     favorites?: boolean;
 } 

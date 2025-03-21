@@ -6,7 +6,7 @@ export interface Bookstore {
         city: string;
         state: string;
         zip: string;
-        coordinates: {
+        coordinates?: {
             lat: number;
             lng: number;
         }

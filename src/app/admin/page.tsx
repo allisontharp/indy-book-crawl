@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AddressAutocomplete from '@/components/AddressAutocomplete';
 
 interface SocialLinks {
     instagram?: string;
@@ -22,13 +23,28 @@ interface Event {
     time: string;
 }
 
+interface AddressData {
+    location: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    latitude: number;
+    longitude: number;
+}
+
 export default function AdminPage() {
     const router = useRouter();
     const [name, setName] = useState('');
-    const [street, setStreet] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zip, setZip] = useState('');
+    const [addressData, setAddressData] = useState<AddressData>({
+        location: '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        latitude: 0,
+        longitude: 0
+    });
     const [website, setWebsite] = useState('');
     const [description, setDescription] = useState('');
     const [categories, setCategories] = useState<string[]>([]);
@@ -87,10 +103,12 @@ export default function AdminPage() {
                 body: JSON.stringify({
                     name,
                     address: {
-                        street,
-                        city,
-                        state,
-                        zip,
+                        street: addressData.address,
+                        city: addressData.city,
+                        state: addressData.state,
+                        zip: addressData.zipCode,
+                        latitude: addressData.latitude,
+                        longitude: addressData.longitude
                     },
                     website,
                     description,
@@ -108,10 +126,15 @@ export default function AdminPage() {
 
             // Reset form
             setName('');
-            setStreet('');
-            setCity('');
-            setState('');
-            setZip('');
+            setAddressData({
+                location: '',
+                address: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                latitude: 0,
+                longitude: 0
+            });
             setWebsite('');
             setDescription('');
             setCategories([]);
@@ -146,45 +169,73 @@ export default function AdminPage() {
                     </div>
 
                     {/* Address */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Street</label>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Address</label>
+                        <AddressAutocomplete
+                            onAddressSelect={setAddressData}
+                            defaultLocation={addressData.location}
+                            initialAddressData={addressData}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="address" className="block text-lg font-medium text-gray-200">
+                            Street Address *
+                        </label>
+                        <input
+                            type="text"
+                            name="address"
+                            id="address"
+                            required
+                            value={addressData.address}
+                            onChange={(e) => setAddressData(prev => ({ ...prev, address: e.target.value }))}
+                            className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="col-span-2">
+                            <label htmlFor="city" className="block text-lg font-medium text-gray-200">
+                                City *
+                            </label>
                             <input
                                 type="text"
-                                value={street}
-                                onChange={(e) => setStreet(e.target.value)}
+                                name="city"
+                                id="city"
                                 required
-                                className="w-full p-2 border rounded"
+                                value={addressData.city}
+                                onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
+                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium mb-1">City</label>
+                            <label htmlFor="state" className="block text-lg font-medium text-gray-200">
+                                State
+                            </label>
                             <input
                                 type="text"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                                required
-                                className="w-full p-2 border rounded"
+                                name="state"
+                                id="state"
+                                value={addressData.state}
+                                onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
+                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium mb-1">State</label>
+                            <label htmlFor="zipCode" className="block text-lg font-medium text-gray-200">
+                                ZIP Code *
+                            </label>
                             <input
                                 type="text"
-                                value={state}
-                                onChange={(e) => setState(e.target.value)}
+                                name="zipCode"
+                                id="zipCode"
                                 required
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">ZIP</label>
-                            <input
-                                type="text"
-                                value={zip}
-                                onChange={(e) => setZip(e.target.value)}
-                                required
-                                className="w-full p-2 border rounded"
+                                pattern="[0-9]{5}"
+                                value={addressData.zipCode}
+                                onChange={(e) => setAddressData(prev => ({ ...prev, zipCode: e.target.value }))}
+                                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                     </div>

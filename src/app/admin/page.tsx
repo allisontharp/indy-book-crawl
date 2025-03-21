@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 
 interface SocialLinks {
@@ -34,7 +33,6 @@ interface AddressData {
 }
 
 export default function AdminPage() {
-    const router = useRouter();
     const [name, setName] = useState('');
     const [addressData, setAddressData] = useState<AddressData>({
         location: '',
@@ -157,23 +155,15 @@ export default function AdminPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
+                    {/* Name & Address */}
                     <div>
-                        <label className="block text-sm font-medium mb-1">Name</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-
-                    {/* Address */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Address</label>
+                        <label className="block text-lg font-medium">Name *</label>
                         <AddressAutocomplete
-                            onAddressSelect={setAddressData}
-                            defaultLocation={addressData.location}
+                            onAddressSelect={(data) => {
+                                setAddressData(data);
+                                setName(data.location);
+                            }}
+                            defaultLocation={name || addressData.location}
                             initialAddressData={addressData}
                         />
                     </div>

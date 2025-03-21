@@ -3,6 +3,19 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Bookstore } from '@/types';
 
+// Fix for default marker icon
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+    iconUrl: icon.src,
+    shadowUrl: iconShadow.src,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
 interface MapProps {
     bookstores: Bookstore[];
 }
@@ -28,9 +41,15 @@ export default function Map({ bookstores }: MapProps) {
 
         // Add markers for bookstores that have coordinates
         const markers = bookstores
-            .filter(bookstore => bookstore.address?.coordinates?.lat && bookstore.address?.coordinates?.lng)
+            .filter((bookstore): bookstore is Bookstore & { address: { latitude: number; longitude: number } } =>
+                typeof bookstore.address?.latitude === 'number' &&
+                typeof bookstore.address?.longitude === 'number'
+            )
             .map(bookstore => {
-                const coordinates = bookstore.address.coordinates || INDY_COORDINATES;
+                const coordinates = {
+                    lat: bookstore.address.latitude,
+                    lng: bookstore.address.longitude
+                };
 
                 return L.marker([coordinates.lat, coordinates.lng])
                     .bindPopup(`

@@ -27,26 +27,27 @@ export default function MapPage() {
                     throw new Error(response.error);
                 }
                 setBookstores(response.data || []);
+                setLoading(false);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load bookstores');
-            } finally {
+                setError(err instanceof Error ? err.message : 'An error occurred');
                 setLoading(false);
             }
         }
-
         loadBookstores();
     }, []);
+
+    if (loading) {
+        return <div className="w-full h-[600px] bg-gray-100 animate-pulse rounded-lg"></div>;
+    }
+
+    if (error) {
+        return <div className="text-red-500">Error: {error}</div>;
+    }
 
     return (
         <MainLayout>
             <div className="space-y-6">
                 <h1 className="text-3xl font-bold text-gray-900">Bookstore Map</h1>
-
-                {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                        {error}
-                    </div>
-                )}
 
                 <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
                     <Map bookstores={bookstores} />

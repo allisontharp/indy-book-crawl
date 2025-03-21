@@ -35,6 +35,22 @@ interface SearchResult {
   };
 }
 
+interface NominatimResponse {
+  display_name: string;
+  lon: string;
+  lat: string;
+  address?: {
+    house_number?: string;
+    road?: string;
+    neighbourhood?: string;
+    postcode?: string;
+    city?: string;
+    state?: string;
+    town?: string;
+    village?: string;
+  };
+}
+
 export default function AddressAutocomplete({
   onAddressSelect,
   defaultLocation = '',
@@ -63,9 +79,9 @@ export default function AddressAutocomplete({
   }, [initialAddressData]);
 
   // Create a memoized search function that won't change between renders
-  const searchAddress = useCallback(
-    debounce(async (searchText: string) => {
-      if (!searchText || searchText.length < 3) {
+  const searchAddress = useCallback((searchText: string) => {
+    const debouncedSearch = debounce(async (text: string) => {
+      if (!text || text.length < 3) {
         setSuggestions([]);
         return;
       }
@@ -74,21 +90,21 @@ export default function AddressAutocomplete({
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            searchText
+            text
           )}&countrycodes=us&limit=20&addressdetails=1`
         );
 
         if (!response.ok) throw new Error('Search failed');
 
-        const data = await response.json();
-        const formattedResults = data.map((item: any) => ({
+        const data: NominatimResponse[] = await response.json();
+        const formattedResults = data.map((item: NominatimResponse) => ({
           place_name: item.display_name,
           text: item.address?.road || item.address?.neighbourhood || '',
-          center: [parseFloat(item.lon), parseFloat(item.lat)],
+          center: [parseFloat(item.lon), parseFloat(item.lat)] as [number, number],
           properties: {
             address: item.address?.road ? `${item.address.house_number || ''} ${item.address.road}`.trim() : '',
             postalcode: item.address?.postcode,
-            city: item.address?.city || item.address?.town || item.address?.village,
+            city: item.address?.city || item.address?.town || item.address?.village || '',
             state: item.address?.state
           }
         }));
@@ -101,16 +117,11 @@ export default function AddressAutocomplete({
       } finally {
         setIsLoading(false);
       }
-    }, 1000),
-    [] // Empty dependency array since this function doesn't depend on any props or state
-  );
+    }, 1000);
 
-  // Cleanup the debounced function on unmount
-  useEffect(() => {
-    return () => {
-      searchAddress.cancel();
-    };
-  }, [searchAddress]);
+    debouncedSearch(searchText);
+    return () => debouncedSearch.cancel();
+  }, []);
 
   // Handle clicking outside of suggestions
   useEffect(() => {

@@ -1,19 +1,12 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
 interface MainLayoutProps {
     children: ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
     const pathname = usePathname();
-
-    const navItems = [
-        { href: '/' as const, label: 'Bookstores' },
-        { href: '/map' as const, label: 'Map' },
-        { href: '/events' as const, label: 'Events' },
-    ];
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -27,18 +20,33 @@ export default function MainLayout({ children }: MainLayoutProps) {
                                 </Link>
                             </div>
                             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                                {navItems.map((item) => (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === item.href
-                                            ? 'border-indigo-500 text-gray-900 dark:text-white'
-                                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
-                                            }`}
-                                    >
-                                        {item.label}
-                                    </Link>
-                                ))}
+                                <Link
+                                    href="/"
+                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === "/"
+                                        ? 'border-indigo-500 text-gray-900 dark:text-white'
+                                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
+                                        }`}
+                                >
+                                    Bookstores
+                                </Link>
+                                <Link
+                                    href="/map"
+                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === "/map"
+                                        ? 'border-indigo-500 text-gray-900 dark:text-white'
+                                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
+                                        }`}
+                                >
+                                    Map
+                                </Link>
+                                {/* <Link
+                                    href="/events"
+                                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === "/events"
+                                        ? 'border-indigo-500 text-gray-900 dark:text-white'
+                                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
+                                        }`}
+                                >
+                                    Events
+                                </Link> */}
                             </div>
                         </div>
                     </div>

@@ -6,10 +6,8 @@ export interface Bookstore {
         city: string;
         state: string;
         zip: string;
-        coordinates?: {
-            lat: number;
-            lng: number;
-        }
+        latitude?: number;
+        longitude?: number;
     };
     categories: string[];
     website?: string;

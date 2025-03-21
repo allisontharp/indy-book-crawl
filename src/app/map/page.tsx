@@ -6,6 +6,7 @@ import { api } from '@/utils/api';
 import Header from '@/components/Header';
 import Link from 'next/link';
 import { Bookshop } from '@/types';
+import { getFavorites } from '@/utils/favorites';
 
 // Dynamically import Leaflet components with no SSR
 const MapContainer = dynamic(
@@ -55,6 +56,7 @@ export default function MapPage() {
         end: ''
     });
     const [dateError, setDateError] = useState<string | null>(null);
+    const [showFavorites, setShowFavorites] = useState(false);
 
     useEffect(() => {
         const fetchBookshops = async () => {
@@ -75,6 +77,18 @@ export default function MapPage() {
         fetchBookshops();
     }, []);
 
+    useEffect(() => {
+        if (showFavorites) {
+            const favorites = getFavorites();
+            const favoriteBookshops = bookshops.filter(shop =>
+                favorites.some(fav => fav.id === shop.id)
+            );
+            setFilteredBookshops(favoriteBookshops);
+        } else {
+            setFilteredBookshops(bookshops);
+        }
+    }, [showFavorites, bookshops]);
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-900 text-gray-100">
@@ -93,7 +107,31 @@ export default function MapPage() {
             <Header />
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
-                    <h1 className="text-3xl font-bold mb-6">Map</h1>
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-3xl font-bold">Map</h1>
+                        <button
+                            onClick={() => setShowFavorites(!showFavorites)}
+                            className={`px-4 py-2 rounded-md flex items-center space-x-2 ${showFavorites
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                }`}
+                        >
+                            <svg
+                                className="w-5 h-5"
+                                fill={showFavorites ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                />
+                            </svg>
+                            <span>Show Favorites</span>
+                        </button>
+                    </div>
 
                     {error ? (
                         <div className="text-red-400 text-center py-4">
@@ -101,7 +139,12 @@ export default function MapPage() {
                         </div>
                     ) : filteredBookshops.length === 0 ? (
                         <div className="text-gray-400 text-center py-4">
-                            {dateError ? 'Please select a valid date range' : 'No car shows found for the selected date range'}
+                            {showFavorites
+                                ? 'No favorite bookshops yet'
+                                : dateError
+                                    ? 'Please select a valid date range'
+                                    : 'No bookshops found for the selected date range'
+                            }
                         </div>
                     ) : (
                         <div className="relative h-[600px] w-full rounded-lg overflow-hidden">

@@ -15,7 +15,9 @@ export default function BookshopCard({ bookshop }: BookshopCardProps) {
     <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-200">
       <div className="p-6">
         <div className="flex justify-between items-start">
-          <h3 className="text-xl font-bold text-gray-100 mb-2">{bookshop.name}</h3>
+          <a href={`/bookshops/${bookshop.id}`} className="text-xl font-bold text-gray-100 mb-2 hover:text-blue-400 transition-colors">
+            {bookshop.name}
+          </a>
           <div className="flex items-center space-x-2">
             <FavoriteButton id={bookshop.id} />
           </div>
@@ -61,13 +63,6 @@ export default function BookshopCard({ bookshop }: BookshopCardProps) {
         )}
 
         <div className="flex justify-between items-center">
-          <a
-            href={`/bookshops/${bookshop.id}`}
-            className="text-blue-400 hover:text-blue-300 font-medium"
-          >
-            View Details →
-          </a>
-
           {bookshop.categories && bookshop.categories.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {bookshop.categories.map((category) => (

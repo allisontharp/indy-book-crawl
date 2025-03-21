@@ -107,6 +107,7 @@ export default function BookshopForm({
     try {
       await onSubmit({
         ...formData,
+        hours,
         events,
       });
     } catch (err) {

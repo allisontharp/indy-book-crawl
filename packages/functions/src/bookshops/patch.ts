@@ -12,7 +12,7 @@ const corsHeaders = {
 };
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-    const logger = new Logger({ serviceName: 'patchCarShow' });
+    const logger = new Logger({ serviceName: 'patchBookshop' });
 
     // Handle OPTIONS request for CORS preflight
     if (event.requestContext.http.method === 'OPTIONS') {
@@ -23,7 +23,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         };
     }
 
-    logger.info(`Patching Car Show: ${JSON.stringify(event)}`);
+    logger.info(`Patching Bookshop: ${JSON.stringify(event)}`);
 
     try {
         if (!event.body) {
@@ -95,10 +95,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         logger.info(`Expression Attribute Names: ${JSON.stringify(expressionAttributeNames)}`);
         logger.info(`Expression Attribute Values: ${JSON.stringify(expressionAttributeValues)}`);
 
-        const carShow = await dynamodb.send(
+        const bookshop = await dynamodb.send(
             new UpdateCommand({
                 TableName: TableName,
-                Key: { id },
+                Key: {
+                    PK: `BOOKSHOP#${id}`
+                },
                 UpdateExpression: updateExpression,
                 ExpressionAttributeNames: expressionAttributeNames,
                 ExpressionAttributeValues: expressionAttributeValues,
@@ -106,14 +108,14 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             })
         );
 
-        logger.info(`Car Show updated: ${JSON.stringify(carShow)}`);
+        logger.info(`Bookshop updated: ${JSON.stringify(bookshop)}`);
 
         return {
             statusCode: 200,
             headers: corsHeaders,
             body: JSON.stringify({
                 success: true,
-                data: carShow.Attributes
+                data: bookshop.Attributes
             })
         };
     } catch (error) {

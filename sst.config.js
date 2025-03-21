@@ -81,7 +81,7 @@ export default {
             ],
           },
           // "GET /bookshops/search": "packages/functions/src/bookshops/search.handler",
-          // "PATCH /bookshops/{id}": "packages/functions/src/bookshops/patch.handler",
+          "PATCH /bookshops/{id}": "packages/functions/src/bookshops/patch.handler",
           // "DELETE /bookshops/{id}": "packages/functions/src/bookshops/delete.handler",
           // // Geocoding routes
           // "GET /geocode": "packages/functions/src/geocode/get.handler",

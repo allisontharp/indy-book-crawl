@@ -57,7 +57,8 @@ export interface Filters {
 export interface ShopHours {
   id: string;
   dayOfWeek: DayOfWeek;
-  time: string;  // Just the time portion (HH:mm)
+  openTime: string;  // Opening time in HH:mm format
+  closeTime: string; // Closing time in HH:mm format
 }
 
 export enum DayOfWeek {

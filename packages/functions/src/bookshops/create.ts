@@ -33,11 +33,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
         // Validate time format
         const isValidTime = (time: string) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
-        const invalidTimes = body.hours.filter((time: ShopHours) => !isValidTime(time.time));
+        const invalidTimes = body.hours.filter((time: ShopHours) =>
+            !isValidTime(time.openTime) || !isValidTime(time.closeTime)
+        );
         if (invalidTimes.length > 0) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Invalid time format. Please use HH:mm format.' })
+                body: JSON.stringify({ message: 'Invalid time format. Please use HH:mm format for both opening and closing times.' })
             };
         }
 

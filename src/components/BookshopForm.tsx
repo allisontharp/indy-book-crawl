@@ -46,12 +46,14 @@ export default function BookshopForm({
   const [hours, setHours] = useState<ShopHours[]>(
     initialData?.hours ? initialData.hours.map(time => ({
       ...time,
-      time: time.time || ''  // Use existing time or empty string
+      openTime: time.openTime || '',
+      closeTime: time.closeTime || ''
     })) : [
       {
         id: uuidv4(),
-        dayOfWeek: DayOfWeek.THURSDAY,
-        time: '',
+        dayOfWeek: DayOfWeek.MONDAY,
+        openTime: '',
+        closeTime: ''
       }
     ]
   );
@@ -123,8 +125,9 @@ export default function BookshopForm({
       ...hours,
       {
         id: uuidv4(),
-        dayOfWeek: DayOfWeek.THURSDAY,
-        time: '',
+        dayOfWeek: DayOfWeek.MONDAY,
+        openTime: '',
+        closeTime: ''
       }
     ]);
   };
@@ -231,73 +234,65 @@ export default function BookshopForm({
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            required
             className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Describe your event..."
           />
         </div>
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium text-gray-200">Shop Hours</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-200">Operating Hours</h3>
             <button
               type="button"
               onClick={addTime}
-              className="px-3 py-1 text-sm text-blue-100 bg-blue-600 rounded hover:bg-blue-700"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Add Time
+              Add Hours
             </button>
           </div>
 
           {hours.map((time, index) => (
-            <div key={time.id} className="p-4 border border-gray-700 rounded-lg space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Day of Week
-                    </label>
-                    <select
-                      value={time.dayOfWeek}
-                      onChange={(e) => updateTime(time.id, { dayOfWeek: e.target.value as DayOfWeek })}
-                      className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    >
-                      {Object.values(DayOfWeek).map(type => (
-                        <option key={type} value={type}>
-                          {type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Time
-                    </label>
-                    <input
-                      type="time"
-                      value={time.time}
-                      onChange={(e) => updateTime(time.id, { time: e.target.value })}
-                      className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {hours.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeTime(time.id)}
-                    className="ml-4 text-gray-400 hover:text-gray-300"
-                    aria-label="Remove time"
-                  >
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
+            <div key={time.id} className="flex items-center gap-4 bg-gray-700/50 p-3 rounded-lg">
+              <div className="w-40">
+                <select
+                  value={time.dayOfWeek}
+                  onChange={(e) => updateTime(time.id, { dayOfWeek: e.target.value as DayOfWeek })}
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {Object.values(DayOfWeek).map(type => (
+                    <option key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <input
+                  type="time"
+                  value={time.openTime}
+                  onChange={(e) => updateTime(time.id, { openTime: e.target.value })}
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                />
+
+                <input
+                  type="time"
+                  value={time.closeTime}
+                  onChange={(e) => updateTime(time.id, { closeTime: e.target.value })}
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {hours.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeTime(time.id)}
+                  className="text-red-400 hover:text-red-300 px-3 py-1 rounded-md bg-red-900/30 hover:bg-red-900/50 transition-colors"
+                  aria-label="Remove time"
+                >
+                  Remove
+                </button>
+              )}
             </div>
           ))}
         </div>

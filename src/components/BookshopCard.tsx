@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookshop } from '@/types';
+import { Bookshop, DayOfWeek } from '@/types';
 import FavoriteButton from './FavoriteButton';
 
 interface BookshopCardProps {
@@ -31,20 +31,25 @@ export default function BookshopCard({ bookshop }: BookshopCardProps) {
 
         <p className="text-gray-400 line-clamp-3 mb-4">{bookshop.description}</p>
 
-        {bookshop.hours.length > 1 && (
+        {bookshop.hours.length > 0 && (
           <div className="mt-4 space-y-2">
-            <h4 className="text-sm font-medium text-gray-300">Schedule:</h4>
+            <h4 className="text-sm font-medium text-gray-300">Hours:</h4>
             <div className="space-y-1">
               {times
                 .sort((a, b) => {
-                  const timeA = new Date(`1970-01-01T${a.time}`);
-                  const timeB = new Date(`1970-01-01T${b.time}`);
-                  return timeA.getTime() - timeB.getTime();
+                  const days = Object.values(DayOfWeek);
+                  return days.indexOf(a.dayOfWeek) - days.indexOf(b.dayOfWeek);
                 })
                 .map(time => (
-                  <div key={time.id} className="flex items-center text-sm">
+                  <div key={time.id} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-400 capitalize">{time.dayOfWeek}</span>
                     <span className="text-gray-300">
-                      {new Date(`1970-01-01T${time.time}`).toLocaleTimeString('en-US', {
+                      {new Date(`1970-01-01T${time.openTime}`).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit'
+                      })}
+                      {' - '}
+                      {new Date(`1970-01-01T${time.closeTime}`).toLocaleTimeString('en-US', {
                         hour: 'numeric',
                         minute: '2-digit'
                       })}

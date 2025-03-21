@@ -6,7 +6,8 @@ import BookshopCard from './BookshopCard';
 import { Bookshop } from '@/types';
 
 async function fetchBookshops() {
-  return api.get('/bookshops?approved=true');
+  return api.get('/bookshops');
+  // return api.get('/bookshops?approved=true');
 }
 
 export default function BookshopsList() {

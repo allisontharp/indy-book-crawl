@@ -3,12 +3,12 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamodb, TableName } from "../lib/dynamodb";
 import { ulid } from "ulid";
 import { Logger } from '@aws-lambda-powertools/logger';
-import type { CarShow, ShowTime } from "../../../../types";
+import { ShopHours } from "@/types";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-    const logger = new Logger({ serviceName: 'createCarShow' });
+    const logger = new Logger({ serviceName: 'createBookshop' });
 
-    logger.info(`Creating Car Show: ${JSON.stringify(event)}`);
+    logger.info(`Creating Bookshop: ${JSON.stringify(event)}`);
 
     try {
         if (!event.body) {
@@ -24,16 +24,16 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         const body = JSON.parse(event.body);
 
         // Validate required fields
-        if (!body.name || !body.description || !body.date || !body.times) {
+        if (!body.name) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Missing required fields. Name, description, and date are required.' })
+                body: JSON.stringify({ message: 'Missing required fields. Name is required.' })
             };
         }
 
         // Validate time format
         const isValidTime = (time: string) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
-        const invalidTimes = body.times.filter((time: ShowTime) => !isValidTime(time.time));
+        const invalidTimes = body.hours.filter((time: ShopHours) => !isValidTime(time.time));
         if (invalidTimes.length > 0) {
             return {
                 statusCode: 400,
@@ -41,8 +41,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             };
         }
 
-        const carShow = {
-            id: ulid(),
+        const id = ulid();
+        const bookshop = {
+            PK: `BOOKSHOP#${id}`,
+            SK: `BOOKSHOP#${id}`,
+            id,
             ...body,
             // Add lowercase fields for searching
             nameLower: body.name.toLowerCase().trim(),
@@ -58,7 +61,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         const response = await dynamodb.send(
             new PutCommand({
                 TableName,
-                Item: carShow,
+                Item: bookshop,
             })
         );
 
@@ -67,10 +70,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(carShow),
+            body: JSON.stringify(bookshop),
         };
     } catch (error) {
-        logger.error("Error creating car show:", { error: error instanceof Error ? error.message : String(error) });
+        logger.error("Error creating bookshop:", { error: error instanceof Error ? error.message : String(error) });
         return {
             statusCode: 500,
             headers: {

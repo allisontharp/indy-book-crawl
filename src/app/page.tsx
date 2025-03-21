@@ -1,3 +1,4 @@
+import BookshopsList from '@/components/BookshopList';
 import Header from '../components/Header';
 
 export default function Home() {
@@ -16,7 +17,7 @@ export default function Home() {
 
         <div className="my-8">
           <h2 className="text-2xl font-bold text-gray-100 mb-6">Bookshops</h2>
-          {/* <CarShowsList /> */}
+          <BookshopsList />
         </div>
       </div>
     </main>

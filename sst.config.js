@@ -74,12 +74,12 @@ export default {
           },
         },
         routes: {
-          // "GET /carshows": "packages/functions/src/carshows/list.handler",
-          // "POST /carshows": "packages/functions/src/carshows/create.handler",
-          // "GET /carshows/search": "packages/functions/src/carshows/search.handler",
-          // "GET /carshows/{id}": "packages/functions/src/carshows/get.handler",
-          // "PATCH /carshows/{id}": "packages/functions/src/carshows/patch.handler",
-          // "DELETE /carshows/{id}": "packages/functions/src/carshows/delete.handler",
+          "GET /bookshops": "packages/functions/src/bookshops/list.handler",
+          "POST /bookshops": "packages/functions/src/bookshops/create.handler",
+          // "GET /bookshops/search": "packages/functions/src/bookshops/search.handler",
+          // "GET /bookshops/{id}": "packages/functions/src/bookshops/get.handler",
+          // "PATCH /bookshops/{id}": "packages/functions/src/bookshops/patch.handler",
+          // "DELETE /bookshops/{id}": "packages/functions/src/bookshops/delete.handler",
           // // Geocoding routes
           // "GET /geocode": "packages/functions/src/geocode/get.handler",
           // Auth routes

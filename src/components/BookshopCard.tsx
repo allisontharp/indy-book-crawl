@@ -68,18 +68,17 @@ export default function BookshopCard({ bookshop }: BookshopCardProps) {
             View Details →
           </a>
 
-          {bookshop.categories && (
-            <span className="bg-gray-700 text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded">
-              {bookshop.categories.map((category) => {
-                return (
-                  <div key={category} className="flex items-center text-sm">
-                    <span className="text-gray-300">
-                      {category}
-                    </span>
-                  </div>
-                );
-              })}
-            </span>
+          {bookshop.categories && bookshop.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {bookshop.categories.map((category) => (
+                <span
+                  key={category}
+                  className="bg-gray-700 text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
           )}
         </div>
       </div>

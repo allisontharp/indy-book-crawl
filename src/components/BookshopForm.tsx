@@ -362,6 +362,65 @@ export default function BookshopForm({
           />
         </div>
 
+        <div>
+          <label htmlFor="categories" className="block text-lg font-medium text-gray-200">
+            Categories
+          </label>
+          <div className="mt-2 space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {[
+                'Used Books',
+                'New Books',
+                'Cafe',
+                'Christian',
+                'Pop Up',
+                'Children',
+                'Rare Books',
+                'Comics',
+                'Textbooks',
+                'Local Authors'
+              ].map((category) => (
+                <label key={category} className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.categories?.includes(category)}
+                    onChange={(e) => {
+                      const newCategories = e.target.checked
+                        ? [...(formData.categories || []), category]
+                        : (formData.categories || []).filter(c => c !== category);
+                      setFormData(prev => ({ ...prev, categories: newCategories }));
+                    }}
+                    className="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-gray-300">{category}</span>
+                </label>
+              ))}
+            </div>
+            <div className="mt-2">
+              <input
+                type="text"
+                id="customCategory"
+                placeholder="Add custom category"
+                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const input = e.target as HTMLInputElement;
+                    const newCategory = input.value.trim();
+                    if (newCategory && !formData.categories?.includes(newCategory)) {
+                      setFormData(prev => ({
+                        ...prev,
+                        categories: [...(prev.categories || []), newCategory]
+                      }));
+                      input.value = '';
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="pt-5">
           <div className="flex justify-end space-x-3">
             {showCancelButton && (

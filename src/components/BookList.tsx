@@ -17,9 +17,19 @@ export function BookList({ books, onToggleFound, onRemoveBook }: BookListProps) 
         );
     }
 
+    // Sort books: unfound books first, then found books
+    const sortedBooks = [...books].sort((a, b) => {
+        if (a.found === b.found) {
+            // If found status is the same, sort by date added (newest first)
+            return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+        }
+        // Sort by found status
+        return a.found ? 1 : -1;
+    });
+
     return (
         <div className="space-y-4">
-            {books.map((book) => (
+            {sortedBooks.map((book) => (
                 <div
                     key={book.id}
                     className={`p-4 border border-gray-700 rounded-lg ${book.found ? 'bg-green-900/30' : 'bg-gray-800'

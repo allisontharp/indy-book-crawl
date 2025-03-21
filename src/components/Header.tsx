@@ -104,6 +104,14 @@ export default function Header() {
             >
               Favorites
             </Link>
+            <Link
+              href="/track"
+              onClick={() => setIsMenuOpen(false)}
+              className={`block text-xl font-medium ${pathname === '/track' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
+                }`}
+            >
+              Track
+            </Link>
             {session?.user?.role === 'ADMIN' && (
               <Link
                 href="/admin/bookshops/new"

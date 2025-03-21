@@ -4,6 +4,7 @@ export interface Bookshop {
   name: string;
   description: string;
   hours: ShopHours[];  // Array of times for events during the show
+  events?: Event[];  // Array of events at the bookshop
   address: string;
   city: string;
   state: string;
@@ -69,4 +70,13 @@ export enum DayOfWeek {
   THURSDAY = 'thursday',
   FRIDAY = 'friday',
   SATURDAY = 'saturday'
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;  // ISO date string
+  time: string;  // Start time in HH:mm format
+  endTime: string;  // End time in HH:mm format
 }

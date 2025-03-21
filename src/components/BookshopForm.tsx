@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Bookshop, DayOfWeek, ShopHours, } from '@/types';
+import { Bookshop, DayOfWeek, ShopHours, Event } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import AddressAutocomplete from './AddressAutocomplete';
+import EventForm from './EventForm';
 
 /*
 TODO: 
@@ -32,6 +33,7 @@ export default function BookshopForm({
 }: BookshopFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [events, setEvents] = useState<Event[]>(initialData?.events || []);
 
   const [addressData, setAddressData] = useState({
     location: initialData?.name || '',
@@ -48,14 +50,7 @@ export default function BookshopForm({
       ...time,
       openTime: time.openTime || '',
       closeTime: time.closeTime || ''
-    })) : [
-      {
-        id: uuidv4(),
-        dayOfWeek: DayOfWeek.MONDAY,
-        openTime: '',
-        closeTime: ''
-      }
-    ]
+    })) : []
   );
 
   const [formData, setFormData] = useState({
@@ -112,6 +107,7 @@ export default function BookshopForm({
     try {
       await onSubmit({
         ...formData,
+        events,
       });
     } catch (err) {
       setFormError('There was an error submitting the form. Please try again.');
@@ -126,8 +122,8 @@ export default function BookshopForm({
       {
         id: uuidv4(),
         dayOfWeek: DayOfWeek.MONDAY,
-        openTime: '',
-        closeTime: ''
+        openTime: '09:00',
+        closeTime: '17:00'
       }
     ]);
   };
@@ -257,7 +253,7 @@ export default function BookshopForm({
                 <select
                   value={time.dayOfWeek}
                   onChange={(e) => updateTime(time.id, { dayOfWeek: e.target.value as DayOfWeek })}
-                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500 p-2.5 text-base h-[42px]"
                 >
                   {Object.values(DayOfWeek).map(type => (
                     <option key={type} value={type}>
@@ -272,14 +268,14 @@ export default function BookshopForm({
                   type="time"
                   value={time.openTime}
                   onChange={(e) => updateTime(time.id, { openTime: e.target.value })}
-                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500 p-2.5 text-base"
                 />
 
                 <input
                   type="time"
                   value={time.closeTime}
                   onChange={(e) => updateTime(time.id, { closeTime: e.target.value })}
-                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 focus:ring-blue-500 focus:border-blue-500 p-2.5 text-base"
                 />
               </div>
 
@@ -420,6 +416,8 @@ export default function BookshopForm({
             </div>
           </div>
         </div>
+
+        <EventForm events={events} onChange={setEvents} />
 
         <div className="pt-5">
           <div className="flex justify-end space-x-3">

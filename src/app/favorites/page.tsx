@@ -7,6 +7,18 @@ import { api } from '@/utils/api';
 import { getFavorites } from '@/utils/favorites';
 import { Bookshop } from '@/types';
 import BookshopCard from '@/components/BookshopCard';
+import MapComponent from '@/components/MapComponent';
+import L from 'leaflet';
+
+// Fix for default marker icons in Next.js
+const icon = L.icon({
+    iconUrl: '/marker-icon.svg',
+    shadowUrl: '/marker-shadow.svg',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
 export default function FavoritesPage() {
     const router = useRouter();
@@ -106,11 +118,16 @@ export default function FavoritesPage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {favoriteBookshops.map((shop) => (
-                            <BookshopCard key={shop.id} bookshop={shop} />
-                        ))}
-                    </div>
+                    <>
+                        <div className="h-[400px] mb-8 rounded-lg overflow-hidden">
+                            <MapComponent bookshops={favoriteBookshops} icon={icon} />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {favoriteBookshops.map((shop) => (
+                                <BookshopCard key={shop.id} bookshop={shop} />
+                            ))}
+                        </div>
+                    </>
                 )}
             </main>
         </div>

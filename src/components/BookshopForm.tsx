@@ -149,19 +149,76 @@ export default function BookshopForm({
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-gray-800 p-6 rounded-lg shadow-xl">
         <div>
-          <label htmlFor="name" className="block text-lg font-medium text-gray-200">
-            Bookshop Name *
+          <label htmlFor="location" className="block text-lg font-medium text-gray-200">
+            Bookshop *
+          </label>
+          <AddressAutocomplete
+            onAddressSelect={handleAddressSelect}
+            defaultLocation={formData.name}
+            initialAddressData={addressData}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="address" className="block text-lg font-medium text-gray-200">
+            Street Address *
           </label>
           <input
             type="text"
-            name="name"
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            name="address"
+            id="address"
             required
+            value={addressData.address}
+            onChange={(e) => setAddressData(prev => ({ ...prev, address: e.target.value }))}
             className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g. Indy Reads"
           />
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="col-span-2">
+            <label htmlFor="city" className="block text-lg font-medium text-gray-200">
+              City *
+            </label>
+            <input
+              type="text"
+              name="city"
+              id="city"
+              required
+              value={addressData.city}
+              onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="state" className="block text-lg font-medium text-gray-200">
+              State
+            </label>
+            <input
+              type="text"
+              name="state"
+              id="state"
+              value={addressData.state}
+              onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="zipCode" className="block text-lg font-medium text-gray-200">
+              ZIP Code *
+            </label>
+            <input
+              type="text"
+              name="zipCode"
+              id="zipCode"
+              required
+              pattern="[0-9]{5}"
+              value={addressData.zipCode}
+              onChange={(e) => setAddressData(prev => ({ ...prev, zipCode: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
         </div>
 
         <div>
@@ -308,79 +365,6 @@ export default function BookshopForm({
             className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="https://www.example.com"
           />
-        </div>
-
-        <div>
-          <label htmlFor="location" className="block text-lg font-medium text-gray-200">
-            Venue Location *
-          </label>
-          <AddressAutocomplete
-            onAddressSelect={handleAddressSelect}
-            defaultLocation={formData.name}
-            initialAddressData={addressData}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="address" className="block text-lg font-medium text-gray-200">
-            Street Address *
-          </label>
-          <input
-            type="text"
-            name="address"
-            id="address"
-            required
-            value={addressData.address}
-            onChange={(e) => setAddressData(prev => ({ ...prev, address: e.target.value }))}
-            className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="col-span-2">
-            <label htmlFor="city" className="block text-lg font-medium text-gray-200">
-              City *
-            </label>
-            <input
-              type="text"
-              name="city"
-              id="city"
-              required
-              value={addressData.city}
-              onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
-              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="state" className="block text-lg font-medium text-gray-200">
-              State
-            </label>
-            <input
-              type="text"
-              name="state"
-              id="state"
-              value={addressData.state}
-              onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
-              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="zipCode" className="block text-lg font-medium text-gray-200">
-              ZIP Code *
-            </label>
-            <input
-              type="text"
-              name="zipCode"
-              id="zipCode"
-              required
-              pattern="[0-9]{5}"
-              value={addressData.zipCode}
-              onChange={(e) => setAddressData(prev => ({ ...prev, zipCode: e.target.value }))}
-              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
         </div>
 
         <div className="pt-5">

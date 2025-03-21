@@ -68,6 +68,9 @@ export default function BookshopForm({
     longitude: initialData?.longitude || 0,
     website: initialData?.website || '',
     categories: initialData?.categories || [],
+    instagram: initialData?.instagram || '',
+    facebook: initialData?.facebook || '',
+    twitter: initialData?.twitter || '',
   });
 
   // Update formData when addressData changes
@@ -147,7 +150,7 @@ export default function BookshopForm({
       <form onSubmit={handleSubmit} className="space-y-6 bg-gray-800 p-6 rounded-lg shadow-xl">
         <div>
           <label htmlFor="name" className="block text-lg font-medium text-gray-200">
-            Event Name *
+            Bookshop Name *
           </label>
           <input
             type="text"
@@ -242,7 +245,70 @@ export default function BookshopForm({
           ))}
         </div>
 
-        {/* TODO: categories */}
+        {/* Social Links Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-200">Social Links</h3>
+
+          <div>
+            <label htmlFor="instagram" className="block text-sm font-medium text-gray-300">
+              Instagram URL
+            </label>
+            <input
+              type="url"
+              name="instagram"
+              id="instagram"
+              value={formData.instagram}
+              onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://www.instagram.com/yourusername"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="facebook" className="block text-sm font-medium text-gray-300">
+              Facebook URL
+            </label>
+            <input
+              type="url"
+              name="facebook"
+              id="facebook"
+              value={formData.facebook}
+              onChange={(e) => setFormData(prev => ({ ...prev, facebook: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://www.facebook.com/yourpage"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="twitter" className="block text-sm font-medium text-gray-300">
+              Twitter URL
+            </label>
+            <input
+              type="url"
+              name="twitter"
+              id="twitter"
+              value={formData.twitter}
+              onChange={(e) => setFormData(prev => ({ ...prev, twitter: e.target.value }))}
+              className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://twitter.com/yourusername"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="website" className="block text-lg font-medium text-gray-200">
+            Website
+          </label>
+          <input
+            type="url"
+            name="website"
+            id="website"
+            value={formData.website}
+            onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+            className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-gray-100 text-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://www.example.com"
+          />
+        </div>
 
         <div>
           <label htmlFor="location" className="block text-lg font-medium text-gray-200">

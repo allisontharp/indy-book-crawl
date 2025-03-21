@@ -12,6 +12,9 @@ export interface Bookshop {
   longitude: number;
   website?: string;
   categories?: string[];
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
   approved: string;  // Stored as string for DynamoDB GSI compatibility
   deleted: string;   // Stored as string for DynamoDB GSI compatibility ('true' or 'false')
   deletedAt?: string;

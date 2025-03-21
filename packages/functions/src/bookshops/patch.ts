@@ -75,25 +75,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                         expressionAttributeNames['#nameLower'] = 'nameLower';
                         expressionAttributeValues[':nameLower'] = value.toLowerCase().trim();
                         break;
-                    case 'description':
-                        updateExpressions.push('#descriptionLower = :descriptionLower');
-                        expressionAttributeNames['#descriptionLower'] = 'descriptionLower';
-                        expressionAttributeValues[':descriptionLower'] = value.toLowerCase().trim();
-                        break;
-                    case 'city':
-                        updateExpressions.push('#cityLower = :cityLower');
-                        expressionAttributeNames['#cityLower'] = 'cityLower';
-                        expressionAttributeValues[':cityLower'] = value.toLowerCase().trim();
-                        break;
-                    case 'location':
-                        updateExpressions.push('#locationLower = :locationLower');
-                        expressionAttributeNames['#locationLower'] = 'locationLower';
-                        expressionAttributeValues[':locationLower'] = value.toLowerCase().trim();
-                        break;
-                    case 'category':
-                        updateExpressions.push('#categoryLower = :categoryLower');
-                        expressionAttributeNames['#categoryLower'] = 'categoryLower';
-                        expressionAttributeValues[':categoryLower'] = value.toLowerCase().trim();
+                    case 'categories':
+                        updateExpressions.push('#categoriesLower = :categoriesLower');
+                        expressionAttributeNames['#categoriesLower'] = 'categoriesLower';
+                        expressionAttributeValues[':categoriesLower'] = (value || []).map((cat: string) => cat.toLowerCase().trim());
                         break;
                 }
             }

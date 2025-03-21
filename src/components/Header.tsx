@@ -89,20 +89,12 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="/calendar"
-              onClick={() => setIsMenuOpen(false)}
-              className={`block text-xl font-medium ${pathname === '/calendar' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
-                }`}
-            >
-              Calendar
-            </Link>
-            <Link
               href="/map"
               onClick={() => setIsMenuOpen(false)}
               className={`block text-xl font-medium ${pathname === '/map' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
                 }`}
             >
-              Map View
+              Map
             </Link>
             <Link
               href="/favorites"
@@ -112,30 +104,14 @@ export default function Header() {
             >
               Favorites
             </Link>
-            {/* <Link
-              href="/bookshop/new"
-              onClick={() => setIsMenuOpen(false)}
-              className={`block text-xl font-medium ${pathname === '/bookshop/new' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
-                }`}
-            >
-              Submit Show
-            </Link> */}
-            <Link
-              href="/about"
-              onClick={() => setIsMenuOpen(false)}
-              className={`block text-xl font-medium ${pathname === '/about' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
-                }`}
-            >
-              About
-            </Link>
             {session?.user?.role === 'ADMIN' && (
               <Link
-                href="/admin/dashboard"
+                href="/admin/bookshops/new"
                 onClick={() => setIsMenuOpen(false)}
                 className={`block text-xl font-medium ${pathname === '/admin/dashboard' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
                   }`}
               >
-                Admin
+                + Bookshop
               </Link>
             )}
           </nav>

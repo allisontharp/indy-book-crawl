@@ -51,10 +51,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             ...body,
             // Add lowercase fields for searching
             nameLower: body.name.toLowerCase().trim(),
-            descriptionLower: body.description.toLowerCase().trim(),
-            cityLower: body.city?.toLowerCase().trim() || '',
-            locationLower: body.location?.toLowerCase().trim() || '',
-            categoryLower: body.category?.toLowerCase().trim() || '',
+            categoriesLower: (body.categories || []).map((cat: string) => cat.toLowerCase().trim()),
             approved: "false", // Store as string for DynamoDB GSI
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

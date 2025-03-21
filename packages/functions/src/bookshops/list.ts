@@ -7,17 +7,34 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     const logger = new Logger({ serviceName: 'listBookshops' });
     logger.info(`Listing Bookshops: ${JSON.stringify(event)}`);
     try {
+        const query = event.queryStringParameters?.q?.toLowerCase().trim();
         const approved = event.queryStringParameters?.approved === "true";
         const includeDeleted = event.queryStringParameters?.includeDeleted === "true";
+
+        let filterExpressions = ["approved = :approved"];
+        const expressionAttributeValues: Record<string, any> = {
+            ":approved": approved.toString(),
+        };
+
+        if (!includeDeleted) {
+            filterExpressions.push("(attribute_not_exists(deleted) OR deleted = :notDeleted)");
+            expressionAttributeValues[":notDeleted"] = "false";
+        }
+
+        if (query) {
+            filterExpressions.push("(contains(#nameLower, :query) OR contains(#categoriesLower, :query))");
+            expressionAttributeValues[":query"] = query;
+        }
 
         const result = await dynamodb.send(
             new ScanCommand({
                 TableName,
-                FilterExpression: "approved = :approved" + (includeDeleted ? "" : " AND (attribute_not_exists(deleted) OR deleted = :notDeleted)"),
-                ExpressionAttributeValues: {
-                    ":approved": approved.toString(),
-                    ...(includeDeleted ? {} : { ":notDeleted": "false" }),
-                }
+                FilterExpression: filterExpressions.join(" AND "),
+                ExpressionAttributeNames: query ? {
+                    "#nameLower": "nameLower",
+                    "#categoriesLower": "categoriesLower"
+                } : undefined,
+                ExpressionAttributeValues: expressionAttributeValues
             })
         );
 

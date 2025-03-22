@@ -69,8 +69,8 @@ export function BookList({ books, onToggleFound, onRemoveBook }: BookListProps) 
                                     <button
                                         onClick={() => onToggleFound(book.id)}
                                         className={`px-3 py-1 rounded whitespace-nowrap ${book.found
-                                                ? 'bg-green-500 text-white hover:bg-green-600'
-                                                : 'bg-gray-600 text-white hover:bg-gray-700'
+                                            ? 'bg-green-500 text-white hover:bg-green-600'
+                                            : 'bg-gray-600 text-white hover:bg-gray-700'
                                             }`}
                                     >
                                         {book.found ? 'Found!' : 'Mark Found'}

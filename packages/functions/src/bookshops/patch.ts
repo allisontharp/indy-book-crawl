@@ -119,7 +119,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             })
         };
     } catch (error) {
-        logger.error(`Error patching car show: ${error}`);
+        logger.error(`Error patching bookshop: ${error}`);
         return {
             statusCode: 500,
             headers: corsHeaders,

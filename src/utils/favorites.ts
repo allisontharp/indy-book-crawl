@@ -1,12 +1,10 @@
-import { CarShow } from '@/types';
-
 interface FavoriteData {
     id: string;
     timestamp: number;
     // We can extend this interface later to add more metadata
 }
 
-const FAVORITES_STORAGE_KEY = 'car_show_favorites';
+const FAVORITES_STORAGE_KEY = 'bookshop_favorites';
 
 export function getFavorites(): FavoriteData[] {
     if (typeof window === 'undefined') return [];
@@ -22,36 +20,36 @@ export function getFavorites(): FavoriteData[] {
     }
 }
 
-export function isFavorite(carShowId: string): boolean {
-    return getFavorites().some(fav => fav.id === carShowId);
+export function isFavorite(bookshopID: string): boolean {
+    return getFavorites().some(fav => fav.id === bookshopID);
 }
 
-export function addFavorite(carShowId: string): void {
+export function addFavorite(bookshopID: string): void {
     if (typeof window === 'undefined') return;
 
     const favorites = getFavorites();
-    if (!favorites.some(fav => fav.id === carShowId)) {
+    if (!favorites.some(fav => fav.id === bookshopID)) {
         favorites.push({
-            id: carShowId,
+            id: bookshopID,
             timestamp: Date.now()
         });
         localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
     }
 }
 
-export function removeFavorite(carShowId: string): void {
+export function removeFavorite(bookshopID: string): void {
     if (typeof window === 'undefined') return;
 
-    const favorites = getFavorites().filter(fav => fav.id !== carShowId);
+    const favorites = getFavorites().filter(fav => fav.id !== bookshopID);
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
 }
 
-export function toggleFavorite(carShowId: string): boolean {
-    if (isFavorite(carShowId)) {
-        removeFavorite(carShowId);
+export function toggleFavorite(bookshopID: string): boolean {
+    if (isFavorite(bookshopID)) {
+        removeFavorite(bookshopID);
         return false;
     } else {
-        addFavorite(carShowId);
+        addFavorite(bookshopID);
         return true;
     }
 } 

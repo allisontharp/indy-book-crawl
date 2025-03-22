@@ -2,10 +2,10 @@
 
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Header from '@/components/Header';
 
-export default function SignIn() {
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
@@ -95,5 +95,35 @@ export default function SignIn() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-full0">
+        <Header />
+        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-700 rounded w-1/3 mb-6"></div>
+              <div className="space-y-4">
+                <div>
+                  <div className="h-4 bg-gray-700 rounded w-1/4 mb-2"></div>
+                  <div className="h-10 bg-gray-700 rounded"></div>
+                </div>
+                <div>
+                  <div className="h-4 bg-gray-700 rounded w-1/4 mb-2"></div>
+                  <div className="h-10 bg-gray-700 rounded"></div>
+                </div>
+                <div className="h-10 bg-gray-700 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   );
 }

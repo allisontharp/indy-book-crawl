@@ -5,8 +5,8 @@ import { Logger } from '@aws-lambda-powertools/logger';
 
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-    const logger = new Logger({ serviceName: 'deleteCarShow' });
-    logger.info(`Deleting Car Show: ${JSON.stringify(event)}`);
+    const logger = new Logger({ serviceName: 'deleteBookshop' });
+    logger.info(`Deleting Bookshop: ${JSON.stringify(event)}`);
 
     try {
         const id = event.pathParameters?.id;
@@ -18,15 +18,17 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ error: "Missing car show ID" }),
+                body: JSON.stringify({ error: "Missing Bookshop ID" }),
             };
         }
 
-        // Soft delete the car show
+        // Soft delete the bookshop
         const result = await dynamodb.send(
             new UpdateCommand({
                 TableName,
-                Key: { id },
+                Key: {
+                    PK: `BOOKSHOP#${id}`,
+                },
                 UpdateExpression: "SET deleted = :deleted, deletedAt = :deletedAt, deletedBy = :deletedBy",
                 ExpressionAttributeValues: {
                     ":deleted": "true",
@@ -43,7 +45,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ error: "Car show not found" }),
+                body: JSON.stringify({ error: "Bookshop not found" }),
             };
         }
 
@@ -55,7 +57,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             body: JSON.stringify(result.Attributes),
         };
     } catch (error) {
-        logger.error("Error deleting car show:", { error: error instanceof Error ? error.message : String(error) });
+        logger.error("Error deleting bookshop:", { error: error instanceof Error ? error.message : String(error) });
         return {
             statusCode: 500,
             headers: {

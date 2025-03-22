@@ -4,10 +4,13 @@ import {
     AdminCreateUserCommand,
     AdminSetUserPasswordCommand
 } from "@aws-sdk/client-cognito-identity-provider";
-
+import { Logger } from '@aws-lambda-powertools/logger';
 const cognito = new CognitoIdentityProviderClient({});
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
+    const logger = new Logger({ serviceName: 'userSignup' });
+    logger.info(`User Signup Starting`);
+
     try {
         if (!event.body) {
             return {
@@ -29,7 +32,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
         // Verify admin secret key
         if (secretKey !== process.env.ADMIN_SECRET_KEY) {
-            console.log(`invalid key, received: ${secretKey}, expected: ${process.env.ADMIN_SECRET_KEY}`)
+            logger.info(`invalid key, received: ${secretKey}, expected: ${process.env.ADMIN_SECRET_KEY}`)
             return {
                 statusCode: 403,
                 headers: { "Content-Type": "application/json" },
@@ -38,6 +41,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         }
 
         // Create user in Cognito
+        logger.info(`Creating user in Cognito with userPoolId: ${process.env.USER_POOL_ID}`);
         const createCommand = new AdminCreateUserCommand({
             UserPoolId: process.env.USER_POOL_ID,
             Username: email,
@@ -79,7 +83,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             }),
         };
     } catch (error: any) {
-        console.error("Error during admin signup:", error);
+        logger.info(`Error during admin signup: ${error}`);
 
         if (error.name === "UsernameExistsException") {
             return {

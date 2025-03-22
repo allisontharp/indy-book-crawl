@@ -61,6 +61,10 @@ export default {
         defaults: {
           function: {
             bind: [table],
+            permissions: [
+              "cognito-idp:AdminCreateUser",
+              "cognito-idp:AdminSetUserPassword",
+            ],
             environment: {
               TABLE_NAME: table.tableName,
               ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY,
@@ -72,36 +76,17 @@ export default {
         routes: {
           "GET /bookshops": "packages/functions/src/bookshops/list.handler",
           "GET /bookshops/{id}": "packages/functions/src/bookshops/get.handler",
-          "POST /bookshops": {
-            function: "packages/functions/src/bookshops/create.handler",
-            bind: [table, auth],
-            permissions: [
-              "cognito-idp:AdminCreateUser",
-              "cognito-idp:AdminSetUserPassword",
-            ],
-          },
+          "POST /bookshops": "packages/functions/src/bookshops/create.handler",
           // "GET /bookshops/search": "packages/functions/src/bookshops/search.handler",
           "PATCH /bookshops/{id}": "packages/functions/src/bookshops/patch.handler",
           // "DELETE /bookshops/{id}": "packages/functions/src/bookshops/delete.handler",
           // // Geocoding routes
           // "GET /geocode": "packages/functions/src/geocode/get.handler",
           // Auth routes
-          "POST /auth/signin": {
-            function: "packages/functions/src/auth/signin.handler",
-            bind: [table, auth],
-          },
-          "POST /auth/signup": {
-            function: "packages/functions/src/auth/signup.handler",
-            bind: [table, auth],
-          },
-          "POST /auth/signout": {
-            function: "packages/functions/src/auth/signout.handler",
-            bind: [table, auth],
-          },
-          "GET /auth/session": {
-            function: "packages/functions/src/auth/session.handler",
-            bind: [table, auth],
-          },
+          "POST /auth/signin": "packages/functions/src/auth/signin.handler",
+          "POST /auth/signup": "packages/functions/src/auth/signup.handler",
+          "POST /auth/signout": "packages/functions/src/auth/signout.handler",
+          "GET /auth/session": "packages/functions/src/auth/session.handler",
         },
       });
 

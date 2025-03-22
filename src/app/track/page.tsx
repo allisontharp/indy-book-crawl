@@ -44,6 +44,12 @@ export default function TrackPage() {
                 <h1 className="text-3xl font-bold mb-8 text-white">Track Your Books</h1>
                 <div className="grid gap-8 md:grid-cols-2">
                     <div>
+                        <section>
+                            <p>
+                                Build your literary wishlist. Track the books you're searching for and check them off as they join your collection.                            </p>
+                        </section>
+                    </div>
+                    <div>
                         <h2 className="text-xl font-semibold mb-4 text-white">Search Books</h2>
                         <BookSearch onAddBook={handleAddBook} />
                     </div>

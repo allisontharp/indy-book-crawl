@@ -34,11 +34,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
                     "#nameLower": "nameLower",
                     "#categoriesLower": "categoriesLower"
                 } : undefined,
-                ExpressionAttributeValues: expressionAttributeValues
+                ExpressionAttributeValues: expressionAttributeValues,
             })
         );
 
-        const bookshops = result.Items || [];
+        const bookshops = (result.Items || []).sort((a, b) => a.nameLower.localeCompare(b.nameLower));
 
         return {
             statusCode: 200,

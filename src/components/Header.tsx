@@ -110,7 +110,15 @@ export default function Header() {
               className={`block text-xl font-medium ${pathname === '/track' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
                 }`}
             >
-              Track
+              Book Tracker
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setIsMenuOpen(false)}
+              className={`block text-xl font-medium ${pathname === '/about' ? 'text-blue-400' : 'text-gray-300 hover:text-white'
+                }`}
+            >
+              About
             </Link>
             {session?.user?.role === 'ADMIN' && (
               <Link
